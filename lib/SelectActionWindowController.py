@@ -51,7 +51,7 @@ class SelectActionWindowController:
         results = gui.ResultsWindow( windowTitle, self.signWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT )
         results.set_text_content( tx )
         results.run()
-	results.destroy()
+        results.destroy()
 
     def generate_error_alert( self, *args ):
         string1, string2 = args[0]
