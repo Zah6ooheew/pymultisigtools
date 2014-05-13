@@ -32,6 +32,8 @@ class SelectActionWindow:
         self.toolbar.append_item( "Sign", "Sign a partially signed transaction", "", gtk.image_new_from_stock( gtk.STOCK_CONVERT, gtk.ICON_SIZE_LARGE_TOOLBAR ), self.controller.create_sign_window )
         self.toolbar.append_space()
         self.toolbar.append_item( "Create", "Create a new spend tx", "", gtk.image_new_from_stock( gtk.STOCK_NEW, gtk.ICON_SIZE_LARGE_TOOLBAR) , self.newTransactionCallback )
+        self.toolbar.append_space()
+        self.toolbar.append_item( "Settings", "Change settings", "", gtk.image_new_from_stock( gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_LARGE_TOOLBAR) , self.controller.create_settings_window )
         self.window.add( self.toolbar )
         self.toolbar.show()
         self.window.show()

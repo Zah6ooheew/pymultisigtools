@@ -2,6 +2,7 @@
 import gui
 import gtk
 from TxSigner import *
+from SettingsController import SettingsController
 import exceptions
 
 class SelectActionWindowController:
@@ -9,6 +10,8 @@ class SelectActionWindowController:
     def __init__( self, main_window ):
         self.window = main_window
         self.signWindow = None
+        self.settingsController = None
+        self.settingsWindow = None
 
     def create_sign_window( self, widget, callback_data = None ):
         if( self.signWindow is not None ):
@@ -18,6 +21,22 @@ class SelectActionWindowController:
         self.signWindow = gui.SignWindow( "Sign Transaction", self.window, gtk.DIALOG_DESTROY_WITH_PARENT )
         self.signWindow.connect( "response", self.sign_window_response )
         self.signWindow.show()
+
+    def create_settings_window( self, widget, callback_data = None ):
+        if( self.settingsWindow is not None ):
+            self.settingsWindow.present()
+            return
+
+        self.settingsWindow = gui.SettingsWindow( "Settings", self.window, gtk.DIALOG_DESTROY_WITH_PARENT )
+        self.settingsController = SettingsController( self.settingsWindow )
+        self.settingsWindow.connect( "destroy", self.settings_window_destroyed )
+        self.settingsWindow.show()
+
+    #we have to delete our references if this is destroyed
+    def settings_window_destroyed( self, dialog, data = None ):
+        self.settingsWindow = None
+        self.settingsController = None
+        return False
 
     def sign_window_response( self, dialog, response_id , data = None ):
         #fake it for now
@@ -35,7 +54,12 @@ class SelectActionWindowController:
             self.show_signed_tx( signedtx, complete )
             
         except RuntimeError as e:
-            self.generate_error_alert( e.args )
+            primaryError = e.args[0]
+            secondaryError = e.args[1]
+            diag = gtk.MessageDialog( self.signWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK , primaryError )
+            diag.format_secondary_markup( secondaryError )
+            diag.run()
+            diag.destroy()
             self.signWindow.present()
             return
 
