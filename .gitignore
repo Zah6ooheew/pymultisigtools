@@ -17,9 +17,15 @@ lib64/
 parts/
 sdist/
 var/
+cffi/
+nacl/
+pycparser/
 *.egg-info/
 .installed.cfg
 *.egg
+_cffi*
+six.*
+settings.json.nacl
 
 # Installer logs
 pip-log.txt

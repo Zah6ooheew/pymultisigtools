@@ -20,17 +20,17 @@ class SettingsWindow(gtk.Dialog):
 
         masterKeyVBox = gtk.VBox()
         masterKeyBox = gtk.HBox(False, 5 )
-        masterKeyButton = gtk.Button( "Change Master Key" )
-        accountKeyButton  = gtk.Button( "Change Account Key" )
+        self.masterKeyButton = gtk.Button( "Change Master Key" )
+        self.accountKeyButton  = gtk.Button( "Change Account Key" )
         numKeysLabel  = gtk.Label( "Used Key Count" )
-        numKeysEntry  = gtk.Entry( )
+        self.numKeysEntry  = gtk.Entry( )
 
-        numKeysEntry.connect( "insert-text", self.ensure_only_numbers )
+        self.numKeysEntry.connect( "insert-text", self.ensure_only_numbers )
 
-        masterKeyBox.pack_start( masterKeyButton )
-        masterKeyBox.pack_start( accountKeyButton )
+        masterKeyBox.pack_start( self.masterKeyButton )
+        masterKeyBox.pack_start( self.accountKeyButton )
         masterKeyBox.pack_start( numKeysLabel )
-        masterKeyBox.pack_start( numKeysEntry )
+        masterKeyBox.pack_start( self.numKeysEntry )
         masterKeyVBox.pack_start( masterKeyBox, False )
         
         bip32Frame.add( masterKeyVBox )
@@ -41,13 +41,15 @@ class SettingsWindow(gtk.Dialog):
         
         masterKeyBox.show()
         masterKeyVBox.show()
-        masterKeyButton.show()
-        accountKeyButton.show()
+        self.masterKeyButton.show()
+        self.accountKeyButton.show()
         numKeysLabel.show()
-        numKeysEntry.show()
+        self.numKeysEntry.show()
         bip32Frame.show()
         proxyFrame.show()
 
+    def add_controller( self, settingsController ):
+        self.masterKeyButton.connect( "clicked", settingsController )
 
     def ensure_only_numbers( self, widget, new_text, new_text_length, position, data=None ):
         if not re.match( "^\d+$", new_text ):

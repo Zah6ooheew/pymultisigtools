@@ -21,3 +21,12 @@ class PasswordEntry(gtk.Dialog):
     def get_text_content( self ): 
         return self.entry.get_text()
 
+    @staticmethod 
+    def get_password_from_user( prompt ):
+        alert = PasswordEntry( prompt, None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT ) 
+        alert.run()
+        password = alert.get_text_content()
+        alert.destroy()
+        return password
+
+

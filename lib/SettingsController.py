@@ -2,6 +2,7 @@
 import gui
 import gtk
 import exceptions
+from Settings import Settings
 
 class SettingsController:
     
@@ -9,7 +10,12 @@ class SettingsController:
         self.settingsWindow = settingsWindow
         self.settingsWindow.connect_after( "response", self.window_response )
         self.settingsWindow.connect( "delete_event", self.window_delete )
-        self.changed = True
+        self.changed = False
+
+        self.settingsStore = Settings.Instance().get_settings_json()
+        if 'numKeys' in self.settingsStore:
+            self.settingsWindow.numKeysEntry.set_text( str( self.settingsStore['numKeys'] ))
+        
 
     def window_delete( self, dialog, data = None ):
         return self.changed
@@ -30,9 +36,20 @@ class SettingsController:
             self.settingsWindow = None
             return
 
+
+        Settings.Instance().save_config_file( self.settingsStore )
+
         self.settingsWindow.destroy()
         self.settingsWindow = None
         return
+
+    def on_master_key_button_clicked( self, widget, data=None ):
+        pass
+
+    def on_account_key_button_clicked( self, widget, data=None ):
+        pass
+
+    
 
     def generate_key_alert( self ):
         alert = gui.PasswordEntry( "Private Key for Signing", self.signWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT ) 

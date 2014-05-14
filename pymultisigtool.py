@@ -1,6 +1,7 @@
 #!/usr/bin/python -W ignore
 
 import gui
+import lib
 import sys
 import pygtk
 if not sys.platform == 'win32':

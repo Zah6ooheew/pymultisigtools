@@ -2,6 +2,7 @@
 import gui
 import gtk
 from TxSigner import *
+from Settings import Settings
 from SettingsController import SettingsController
 import exceptions
 
@@ -49,7 +50,7 @@ class SelectActionWindowController:
         signer = TxSigner()
         try:
             signer.import_json( bufferText )
-            key = self.generate_key_alert( )
+            key = gui.PasswordEntry.get_password_from_user( "Private Key" )
             signedtx, complete = signer.sign( key )
             self.show_signed_tx( signedtx, complete )
             
@@ -86,9 +87,3 @@ class SelectActionWindowController:
         alert.run()
         alert.destroy()
 
-    def generate_key_alert( self ):
-        alert = gui.PasswordEntry( "Private Key for Signing", self.signWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT ) 
-        alert.run()
-        password = alert.get_text_content()
-        alert.destroy()
-        return password
