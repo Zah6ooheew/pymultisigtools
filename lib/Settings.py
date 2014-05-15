@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import thread
+import threading
 import time
 import io
 import os
@@ -22,7 +22,7 @@ class Settings:
         #might as well define this as a constant
         #otherwise we end up with magic numbers elsewhere
         self.PASSWORD_SALT_SIZE = 8
-        self.passwordLock = thread.allocate_lock()
+        self.passwordLock = threading.Lock()
         self.key = None
         self.deleteCallbackThread = None
         self.salt = None
@@ -85,22 +85,14 @@ class Settings:
 
     #delete the key after it's time'd out 
     def delete_key( self ):
-        self.passwordLock.aquire()
+        print "deleting key"
+        self.passwordLock.acquire()
         self.key = None
         self.passwordLock.release()
 
     def get_default_settings( self ):
         defaults = { "bip32master": None, "accountMaster": None, "numKeys": 0 }
         return defaults
-
-    #we may get interrupted forcefully if they key is
-    #reaquired before the timeout
-    def delete_key_callback( self ):
-        try:
-            time.sleep( 60 )
-            delete_key()
-        except SystemExit:
-            return
 
     #everything should use this function if they need the key
     #to ensure that it gets timed out correctly
@@ -109,10 +101,11 @@ class Settings:
     def get_key( self ):
         self.passwordLock.acquire()
         if( self.deleteCallbackThread is not None ):
-            self.deleteCallbackThread.exit()
+            self.deleteCallbackThread.cancel()
 
         if( self.key is not None ):
-            self.deleteCallbackThread = thread.start_new_thread( self.delete_key_callback, ( ))
+            self.deleteCallbackThread = threading.Timer( 30.0, self.delete_key )
+            self.deleteCallbackThread.start()
             return self.key
 
         password = gui.PasswordEntry.get_password_from_user( "Configuration Password" )
@@ -120,11 +113,7 @@ class Settings:
             self.salt = nacl.utils.random( self.PASSWORD_SALT_SIZE )
         
         self.key = PBKDF2( password, self.salt ).read( nacl.secret.SecretBox.KEY_SIZE )
-        self.deleteCallbackThread = thread.start_new_thread( self.delete_key_callback, () )
+        self.deleteCallbackThread = threading.Timer( 30.0, self.delete_key )
+        self.deleteCallbackThread.start()
         return self.key
-
-
-    def get_master_bip32_key( self ):
-        if( self.cyperText is None ):
-            return None
 
