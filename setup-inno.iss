@@ -25,76 +25,8 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "E:\pymultisigtools\dist\pymultisigtool.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\_hashlib.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\_socket.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\_ssl.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-crt-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-crt-l2-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-debug-l1-1-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-delayload-l1-1-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-errorhandling-l1-1-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-file-l1-2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-handle-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-heap-l1-2-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-heap-obsolete-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-libraryloader-l1-2-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-localization-l1-2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-processenvironment-l1-2-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-processthreads-l1-1-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-profile-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-registry-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-string-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-synch-l1-2-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-sysinfo-l1-2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-threadpool-l1-2-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-timezone-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-core-util-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\api-ms-win-security-base-l1-2-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\atk.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\bz2.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\cairo._cairo.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\DNSAPI.DLL"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\freetype6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\gio._gio.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\glib._glib.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\gobject._gobject.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\gtk._gtk.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\intl.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libatk-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libcairo-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libexpat-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libfontconfig-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgdk_pixbuf-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgdk-win32-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgio-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libglib-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgmodule-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgobject-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgthread-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libgtk-win32-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libpango-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libpangocairo-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libpangoft2-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libpangowin32-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\libpng14-14.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\library.zip"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\MSIMG32.DLL"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\NSI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\pango.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\pangocairo.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\pymultisigtool.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\python27.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\select.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\USP10.DLL"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\w9xpopen.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\pymultisigtools\dist\zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\pymultisigtools\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "E:\pymultisigtools\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall
-Source: "E:\pymultisigtools\dist\etc\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\pymultisigtools\dist\lib\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\pymultisigtools\dist\share\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
