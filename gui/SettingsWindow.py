@@ -21,16 +21,23 @@ class SettingsWindow(gtk.Dialog):
         masterKeyVBox = gtk.VBox()
         masterKeyBox = gtk.HBox(False, 5 )
         self.masterKeyButton = gtk.Button( "Change Master Key" )
-        self.accountKeyButton  = gtk.Button( "Change Account Key" )
+        accountLabel  = gtk.Label( "Account:" )
+        self.accountKeyButton  = gtk.SpinButton( gtk.Adjustment( 1, 0, 256, 1, 5 ) )
+        self.accountKeyButton.set_update_policy( gtk.UPDATE_IF_VALID )
+        self.accountKeyButton.set_numeric( True )
+        self.accountKeyButton.set_snap_to_ticks( True )
         numKeysLabel  = gtk.Label( "Used Key Count" )
-        self.numKeysEntry  = gtk.Entry( )
 
-        self.numKeysEntry.connect( "insert-text", self.ensure_only_numbers )
+        self.numKeysEntry = gtk.SpinButton( gtk.Adjustment( 0, 0, 2**30, 1, 5 ) )
+        self.numKeysEntry.set_update_policy( gtk.UPDATE_IF_VALID )
+        self.numKeysEntry.set_numeric( True )
+        self.numKeysEntry.set_snap_to_ticks( True )
 
         masterKeyBox.pack_start( self.masterKeyButton )
+        masterKeyBox.pack_start( accountLabel )
         masterKeyBox.pack_start( self.accountKeyButton )
-        masterKeyBox.pack_start( numKeysLabel )
-        masterKeyBox.pack_start( self.numKeysEntry )
+        masterKeyBox.pack_end( self.numKeysEntry )
+        masterKeyBox.pack_end( numKeysLabel )
         masterKeyVBox.pack_start( masterKeyBox, False )
         
         bip32Frame.add( masterKeyVBox )
@@ -50,7 +57,3 @@ class SettingsWindow(gtk.Dialog):
 
     def add_controller( self, settingsController ):
         self.masterKeyButton.connect( "clicked", settingsController )
-
-    def ensure_only_numbers( self, widget, new_text, new_text_length, position, data=None ):
-        if not re.match( "^\d+$", new_text ):
-            widget.emit_stop_by_name( "insert-text" )

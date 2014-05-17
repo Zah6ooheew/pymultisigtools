@@ -28,7 +28,11 @@ class Settings:
         self.salt = None
         self.cypherText = None
         self.settingsHash = None
-        self.settingsFilePath = os.path.join( sys.path[0], settingsFile )
+
+        if hasattr(sys,'frozen'):
+            self.settingsFilePath = os.path.join( sys.path.expanduser( "~/pymultisigtools" ) )
+        else:
+            self.settingsFilePath = os.path.join( sys.path[0], settingsFile )
     
 
     def load_config_file( self ):
@@ -54,9 +58,11 @@ class Settings:
             if( self.settingsHash is None ):
                 raise RuntimeError( "Invalid State", "Tried to save settings that were never set" )
 
-            settingsString = json.dumps( self.settingsHash )
+            #this is just to make sure that we have a valid key
+            self.get_settings_json()
 
             mykey = self.get_key()
+            settingsString = json.dumps( self.settingsHash )
             secretBox = nacl.secret.SecretBox( mykey )
             nonce = nacl.utils.random( nacl.secret.SecretBox.NONCE_SIZE )
             self.cypherText = secretBox.encrypt( settingsString, nonce )
@@ -78,21 +84,33 @@ class Settings:
             secretBox = nacl.secret.SecretBox( mykey )
             jsonbytes = secretBox.decrypt( self.cypherText )
             configJson = jsonbytes.encode( "utf-8" )
-            return json.loads( configJson )
+            return json.loads( configJson, object_hook=self.fix_account_keys )
         finally:
             if self.passwordLock.locked():
                 self.passwordLock.release()
 
+    def fix_account_keys( self, indict ):
+        returndict = dict()
+        for key, value in indict.items():
+            if key.isdigit():
+                returndict[int(key)] = value
+            else:
+                returndict[key] = value
+        return returndict
+
     #delete the key after it's time'd out 
     def delete_key( self ):
-        print "deleting key"
         self.passwordLock.acquire()
         self.key = None
         self.passwordLock.release()
 
     def get_default_settings( self ):
-        defaults = { "bip32master": None, "accountMaster": None, "numKeys": 0 }
+        defaults = { "bip32master": None, "numKeys": 0 }
         return defaults
+
+    def cancel_callback( self ):
+        if( self.deleteCallbackThread is not None ):
+            self.deleteCallbackThread.cancel()
 
     #everything should use this function if they need the key
     #to ensure that it gets timed out correctly
@@ -100,17 +118,25 @@ class Settings:
     #the password lock after it's done using the key
     def get_key( self ):
         self.passwordLock.acquire()
-        if( self.deleteCallbackThread is not None ):
-            self.deleteCallbackThread.cancel()
+        self.cancel_callback()
 
         if( self.key is not None ):
             self.deleteCallbackThread = threading.Timer( 30.0, self.delete_key )
             self.deleteCallbackThread.start()
             return self.key
 
-        password = gui.PasswordEntry.get_password_from_user( "Configuration Password" )
-        if ( self.salt is None ):
+        password = None
+
+        if self.salt is None:
+            while True:
+                password1 = gui.PasswordEntry.get_password_from_user( "New Password" )
+                password2 = gui.PasswordEntry.get_password_from_user( "Confirm Password" )
+                if password1 == password2:
+                    password = password1
+                    break
             self.salt = nacl.utils.random( self.PASSWORD_SALT_SIZE )
+        else:
+            password = gui.PasswordEntry.get_password_from_user( "Configuration Password" )
         
         self.key = PBKDF2( password, self.salt ).read( nacl.secret.SecretBox.KEY_SIZE )
         self.deleteCallbackThread = threading.Timer( 30.0, self.delete_key )

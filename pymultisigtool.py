@@ -9,5 +9,7 @@ if not sys.platform == 'win32':
 import gtk
 
 if __name__ == '__main__':
+    gtk.threads_init()
     mainWindow = gui.SelectActionWindow()
     mainWindow.main()
+    lib.Settings.Instance().cancel_callback()

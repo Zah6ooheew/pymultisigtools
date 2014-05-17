@@ -29,7 +29,16 @@ class SelectActionWindowController:
             return
 
         self.settingsWindow = gui.SettingsWindow( "Settings", self.window, gtk.DIALOG_DESTROY_WITH_PARENT )
-        self.settingsController = SettingsController( self.settingsWindow )
+        try:
+            self.settingsController = SettingsController( self.settingsWindow )
+        except:
+            diag = gtk.MessageDialog( self.signWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK , "Invalid Password" )
+            diag.run()
+            diag.destroy()
+            Settings.Instance().delete_key()
+            self.settingsWindow.destroy()
+            self.settingsWindow = None
+            return
         self.settingsWindow.connect( "destroy", self.settings_window_destroyed )
         self.settingsWindow.show()
 
@@ -77,13 +86,4 @@ class SelectActionWindowController:
         results.set_text_content( tx )
         results.run()
         results.destroy()
-
-    def generate_error_alert( self, *args ):
-        string1, string2 = args[0]
-        alert = gtk.Dialog( string1, self.signWindow, gtk.DIALOG_MODAL, ( gtk.STOCK_OK, gtk.RESPONSE_OK ) )
-        label = gtk.Label( string2 )
-        alert.vbox.pack_start( label )
-        label.show()
-        alert.run()
-        alert.destroy()
 

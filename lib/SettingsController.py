@@ -14,12 +14,13 @@ class SettingsController:
         self.settingsWindow.connect_after( "response", self.window_response )
         self.settingsWindow.connect( "delete_event", self.window_delete )
         self.settingsWindow.masterKeyButton.connect( "clicked", self.on_master_key_button_clicked )
-        self.changed = False
+        self.settingsWindow.accountKeyButton.connect( "value_changed", self.update_key_nums )
 
         self.settingsStore = Settings.Instance().get_settings_json()
-        if 'numKeys' in self.settingsStore:
-            self.settingsWindow.numKeysEntry.set_text( str( self.settingsStore['numKeys'] ))
-        
+        if 'bip32master' in self.settingsStore:
+            self.update_widget_values()
+
+        self.changed = False
 
     def window_delete( self, dialog, data = None ):
         return self.changed
@@ -40,12 +41,61 @@ class SettingsController:
             self.settingsWindow = None
             return
 
+        try:
+            self.save_settings()
+        except Exception as e:
+            alert = gtk.MessageDialog( self.settingsWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Could not save settings: " + str( e ) )
+            alert.run()
+            alert.destroy()
+            Settings.Instance().delete_key()
+            return
 
-        Settings.Instance().save_config_file( self.settingsStore )
+        if( response_id == gtk.RESPONSE_APPLY ):
+            return 
 
         self.settingsWindow.destroy()
         self.settingsWindow = None
         return
+
+    def save_settings( self ):
+        #no settings to save if there is no master key
+        if self.settingsStore['bip32master'] is None:
+            self.changed= False
+            return
+
+        account = self.settingsWindow.accountKeyButton.get_value_as_int()
+        self.settingsStore["accountNumber"] = account
+
+        #if there is no info for this account, we have to derive the master key for it
+        if( account not in self.settingsStore['accounts'] ):
+            self.settingsStore['accounts'][account] = {}
+            accountHardenedKey = bitcoin.bip32_ckd( self.settingsStore['bip32master'], ( account + 2**31 ) )
+            #we always work with the 'external' chain, since we don't support multiple chains in an account
+            accountKey = bitcoin.bip32_ckd( accountHardenedKey, 0 )
+            self.settingsStore['accounts'][account]['accountKey'] = accountKey
+        
+        #update the number of keys
+        numKeys = self.settingsWindow.numKeysEntry.get_value_as_int()
+        self.settingsStore['accounts'][account]['numKeys'] = numKeys
+        Settings.Instance().save_config_file( self.settingsStore )
+
+        self.changed = False
+        return
+
+    def update_key_nums( self, widget, data=None ):
+        account = widget.get_value_as_int()
+        if account in self.settingsStore['accounts']:
+            accountValues = self.settingsStore['accounts'][account]
+            if 'numKeys' in accountValues:
+                numKeys = accountValues['numKeys']
+                self.settingsWindow.numKeysEntry.set_value( numKeys )
+            else: 
+                self.settingsWindow.numKeysEntry.set_value( 0 )
+        else: 
+            self.settingsWindow.numKeysEntry.set_value( 0 )
+        return
+
+
 
     def on_master_key_button_clicked( self, widget, data=None ):
         if self.settingsStore is not None:
@@ -63,17 +113,14 @@ class SettingsController:
         confirm.run()
         confirm.destroy()
         self.settingsStore['bip32master'] = masterKey
+        self.settingsStore['accountNumber'] = 1
+        self.settingsStore['accounts'] = dict()
+        self.update_widget_values()
+
+    def update_widget_values( self ):
+        if 'accountNumber' in self.settingsStore:
+            account = self.settingsStore['accountNumber']
+            self.settingsWindow.accountKeyButton.set_value( account )
+
         self.changed = True
-        
-
-    def on_account_key_button_clicked( self, widget, data=None ):
-        pass
-
-    
-
-    def generate_key_alert( self ):
-        alert = gui.PasswordEntry( "Private Key for Signing", self.signWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT ) 
-        alert.run()
-        password = alert.get_text_content()
-        alert.destroy()
-        return password
+        return
