@@ -3,6 +3,7 @@ import gui
 import gtk
 from TxSigner import *
 from Settings import Settings
+from KeyHelper import KeyHelper
 from SettingsController import SettingsController
 import exceptions
 
@@ -59,7 +60,9 @@ class SelectActionWindowController:
         signer = TxSigner()
         try:
             signer.import_json( bufferText )
-            key = gui.PasswordEntry.get_password_from_user( "Private Key" )
+            key = KeyHelper.get_bip32_key( signer.pubs )
+            if( key is None ):
+                key = gui.PasswordEntry.get_password_from_user( "Private Key" )
             signedtx, complete = signer.sign( key )
             self.show_signed_tx( signedtx, complete )
             
