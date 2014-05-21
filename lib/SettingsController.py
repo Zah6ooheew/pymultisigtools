@@ -109,7 +109,8 @@ class SettingsController:
         seed = os.urandom( 32 ) 
         masterKey = bitcoin.bip32_master_key( seed )
             
-        confirm = gtk.MessageDialog( self.settingsWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "Your new key is: " + masterKey )
+        confirm = gtk.MessageDialog( self.settingsWindow, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "Your new key is: " )
+        confirm.format_secondary_markup( masterKey )
         confirm.run()
         confirm.destroy()
         self.settingsStore['bip32master'] = masterKey
