@@ -30,7 +30,7 @@ class Settings:
         self.settingsHash = None
 
         if hasattr(sys,'frozen'):
-            self.settingsFilePath = os.path.join( sys.path.expanduser( "~/pymultisigtools" ) )
+            self.settingsFilePath = os.path.join( os.path.expanduser( "~" ), settingsFile )
         else:
             self.settingsFilePath = os.path.join( sys.path[0], settingsFile )
     
