@@ -5,10 +5,10 @@ A new library based on pybitcointools that allows you to easily spend
 from P2SH addresses. 
 
 ### Current Features
-Signs tx
-Uses BIP32 compatible structure to generate keys and will automatically use
-those keys to sign a tx
-Windows Binary (This time full tested!)
+
+* Signs tx
+* Uses BIP32 compatible structure to generate keys and will automatically use those keys to sign a tx
+* Windows Binary (This time full tested!)
 
 ### Planned Features
 
