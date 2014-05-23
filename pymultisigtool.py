@@ -16,4 +16,4 @@ if __name__ == '__main__':
     mainWindow = gui.SelectActionWindow()
     mainWindow.main()
     lib.Settings.Instance().cancel_callback()
-    gtk.htreads_leave()
+    gtk.threads_leave()
