@@ -85,13 +85,10 @@ class Settings:
             jsonbytes = secretBox.decrypt( self.cypherText )
             configJson = jsonbytes.encode( "utf-8" )
             return json.loads( configJson, object_hook=self.fix_account_keys )
-        except:
-            if self.passwordLock.locked():
-                self.passwordLock.release()
-            self.delete_key()
         finally:
             if self.passwordLock.locked():
                 self.passwordLock.release()
+            self.delete_key()
 
     def fix_account_keys( self, indict ):
         returndict = dict()

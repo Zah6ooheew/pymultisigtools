@@ -46,9 +46,53 @@ class KeyHelper:
 
         return None
 
-    @staticmethod
-    def get_account_number_and_chain( settings ):
+    @staticmethod 
+    def get_accounts():
+        settings = Settings.Instance().get_settings_json()
+        if( settings['bip32master'] is None ):
+            return None
+
         account_number = settings['accountNumber']
+
+        account_info = {}
+        for account in settings['accounts'].keys():
+            account_key = settings['accounts'][account]['accountKey']
+            chain_length = settings['accounts'][account]['numKeys']
+
+            #make sure we have all our keys
+            possible_keys = set(range( chain_length ) )
+            actual_keys = set([key[0] for key in settings['accounts'][account].get('keys', [])])
+            needed_keys = possible_keys - actual_keys
+            if len(needed_keys) > 0:
+                if 'keys' not in settings['accounts'][account]:
+                    settings['accounts'][account]['keys'] = [] 
+                KeyHelper.regenerate_keys( account_key, needed_keys, settings['accounts'][account]['keys'] )
+                #save these if we had to regenerate them
+                Settings.Instance().save_config_file(settings)
+
+
+            account_info[account] = settings['accounts'][account].get( 'keys', 0 )
+
+        return account_info, account_number
+
+    @staticmethod
+    def regenerate_keys( account_key, needed_keys, key_list ):
+        for key in needed_keys:
+            return_key = bitcoin.bip32_ckd(account_key, key)
+            return_key = bitcoin.bip32_extract_key(return_key)
+            return_key = bitcoin.privtopub(return_key)
+            print return_key
+            key_list.append( ( key, return_key, False ) )
+        return 
+        
+
+
+    @staticmethod
+    def get_account_number_and_chain( settings=None, account_number=None):
+        if settings is None:
+            settings = Settings.Instance().get_settings_json()
+        if account_number is None:
+            account_number = settings['accountNumber']
         account_info = settings['accounts'][account_number]
         account_key = account_info['accountKey']
         key_number = account_info['numKeys']
@@ -67,10 +111,15 @@ class KeyHelper:
         return_key = bitcoin.bip32_ckd( account_key, key_number )
         return_key = bitcoin.bip32_extract_key( return_key )
         return_key = bitcoin.privtopub( return_key )
+
+        #save key for later
+        if 'keys' not in settings['accounts'][account_number]:
+            settings['accounts'][account_number]['keys'] = []
+        settings['accounts'][account_number]['keys'].append( (key_number, return_key, False ) )
         
         #we increment the key counter after making the key
-        #because the chain code is 0 indexed, making the 0th key the first one we 
-        #use
+        #because the chain code is 0 indexed, making the 0th key 
+        #the first one we use
         key_number += 1
 
         #remember to save our new key
