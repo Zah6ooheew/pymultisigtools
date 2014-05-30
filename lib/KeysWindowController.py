@@ -17,6 +17,7 @@ class KeysWindowController:
         #self.keys_window.connect_after( "response", self.window_response )
         self.keys_window.connect( "delete_event", self.window_delete )
         self.keys_window.account_key_button.connect( "clicked", self.on_account_key_button_clicked )
+        self.keys_window.pub_key_button.connect( "clicked", self.on_account_key_button_clicked, True )
         self.keys_window.key_view.connect( "button_press_event", self.display_context_menu )
         self.keys_window.account_spinner.connect( "value_changed", self.update_account )
 
@@ -78,7 +79,6 @@ class KeysWindowController:
         return
 
 
-
     def on_account_key_button_clicked( self, widget, data=None ):
         #no account? 
         if self.account_info is None:
@@ -94,8 +94,14 @@ class KeysWindowController:
             confirm.run()
             confirm.destroy()
             return
+
+        label_string = "Extended Private Account Key:"
+        #This means we are showing a public key
+        if data is True: 
+            label_string = "Public Extended Account Key:"
+            account_key = KeyHelper.get_extended_public_key( account_key )
             
-        confirm = gtk.MessageDialog( self.keys_window, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "Extended Private Account Key:" )
+        confirm = gtk.MessageDialog( self.keys_window, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, label_string )
         confirm.format_secondary_markup( account_key )
         confirm.run()
         confirm.destroy()

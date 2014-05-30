@@ -18,7 +18,7 @@ class SettingsWindow(gtk.Dialog):
         bip32Frame = gtk.Frame( "Address Settings" )
         proxyFrame = gtk.Frame( "Connection Settings" )
 
-        masterKeyVBox = gtk.VBox()
+        masterKeyVBox = gtk.VBox(False, 30)
         masterKeyBox = gtk.HBox(False, 5 )
         self.masterKeyButton = gtk.Button( "Change Master Key" )
         accountLabel  = gtk.Label( "Account:" )
@@ -39,6 +39,13 @@ class SettingsWindow(gtk.Dialog):
         masterKeyBox.pack_end( self.numKeysEntry )
         masterKeyBox.pack_end( numKeysLabel )
         masterKeyVBox.pack_start( masterKeyBox, False )
+
+        backup_box = gtk.HBox(False)
+        self.backup_button = gtk.Button( "Show Backup JSON" )
+        self.restore_button = gtk.Button( "Restore From JSON" )
+        backup_box.pack_start(self.restore_button, False )
+        backup_box.pack_end(self.backup_button, False )
+        masterKeyVBox.pack_start( backup_box, False )
         
         bip32Frame.add( masterKeyVBox )
 
@@ -48,7 +55,11 @@ class SettingsWindow(gtk.Dialog):
         
         masterKeyBox.show()
         masterKeyVBox.show()
+        backup_box.show()
+        backup_box.show()
         self.masterKeyButton.show()
+        self.backup_button.show()
+        self.restore_button.show()
         self.accountKeyButton.show()
         numKeysLabel.show()
         self.numKeysEntry.show()

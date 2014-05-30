@@ -11,8 +11,10 @@ import gui
 import gtk
 import json
 import errno
+import bitcoin
 from pbkdf2 import PBKDF2 
 from Singleton import Singleton 
+import lib
 
 @Singleton
 class Settings:
@@ -51,6 +53,30 @@ class Settings:
         finally:
             if settingsFile is not None:
                 settingsFile.close() 
+
+    def restore_backup_json( self, backup_json ):
+        clean_settings = lib.KeyHelper.clean_settings( backup_json )
+
+        #back this up in case something bad happens and we have to rollback
+        old_salt = self.salt
+        old_cypherText = self.cypherText
+        old_get_settings_json = self.get_settings_json
+
+        self.salt = None
+        self.cypherText = None
+        self.get_settings_json = lambda: True;
+
+        try: 
+            self.delete_key()
+            new_settings_json = self.save_config_file( clean_settings )
+        except Exception as e:
+            self.salt = old_salt
+            self.cypherText = old_cypherText
+            raise e
+        finally:
+            self.get_settings_json = old_get_settings_json
+
+        return clean_settings
 
     def save_config_file( self, newSettings ):
         self.settingsHash = newSettings
@@ -110,7 +136,7 @@ class Settings:
         self.passwordLock.release()
 
     def get_default_settings( self ):
-        defaults = { "bip32master": None, "numKeys": 0 }
+        defaults = { "bip32master": None }
         return defaults
 
     def cancel_callback( self ):

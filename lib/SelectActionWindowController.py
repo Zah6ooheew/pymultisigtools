@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import gui
 import gtk
-from TxSigner import *
+from TxSigner import TxSigner
 from Settings import Settings
 from KeyHelper import KeyHelper
 from SettingsController import SettingsController

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import gui
 import gtk
-from Settings import Settings
 import exceptions
 import bitcoin
+import json
+from Settings import Settings
 
 class KeyHelper:
 
@@ -37,7 +38,19 @@ class KeyHelper:
 
         account_number, account_key, key_number = KeyHelper.get_account_number_and_chain( settings )
 
-        for i in range( key_number ):
+        #see if we already have this cached, and I can just get the key fast
+        cached = set( settings['accounts'][account_number].get(keys,[]) )
+        pub_set = set( public_keys )
+        hits = cached & pub_set 
+
+        if len(hits) > 0:
+            return KeyHelper.get_private_for_chain( account_number, hits[0][0], settings )
+
+        #drat, didn't find it! at least we can only need to test the ones that 
+        #we didn't already check
+        missed = set(range(key_number)) - set([cache[0] for cache in cached])
+            
+        for i in missed:
             priv = bitcoin.bip32_ckd( account_key, i )
             priv = bitcoin.bip32_extract_key( priv )
             canidate = bitcoin.privtopub( priv )
@@ -45,6 +58,10 @@ class KeyHelper:
                 return priv
 
         return None
+
+    @staticmethod
+    def get_extended_public_key( account_key ):
+        return bitcoin.bip32_privtopub( account_key )
 
     @staticmethod 
     def get_accounts():
@@ -79,7 +96,6 @@ class KeyHelper:
             return_key = bitcoin.bip32_ckd(account_key, key)
             return_key = bitcoin.bip32_extract_key(return_key)
             return_key = bitcoin.privtopub(return_key)
-            print return_key
             key_list.append( ( key, return_key, False ) )
         return 
         
@@ -98,12 +114,44 @@ class KeyHelper:
         return account_number, account_key, key_number
 
     @staticmethod
-    def get_private_for_chain( account, key_number ):
-        settings = Settings.Instance().get_settings_json()
+    def get_private_for_chain(account, key_number, settings=None):
+        if settings is None:
+            settings = Settings.Instance().get_settings_json()
         account_key = settings['accounts'][account]['accountKey']
         return_key = bitcoin.bip32_ckd( account_key, key_number )
         return_key = bitcoin.bip32_extract_key( return_key )
         return return_key
+
+    @staticmethod
+    def clean_settings( backup_json ):
+        clean_settings = {}
+        new_settings = json.loads( backup_json, object_hook=lambda x: Settings.Instance().fix_account_keys(x) )
+        if 'bip32master' not in new_settings:
+            raise ValueError( "Given JSON doesn't have master key" )
+        vbytes, depth, fingerprint, i, chaincode, key = bitcoin.bip32_deserialize( new_settings['bip32master'] )
+        if vbytes != bitcoin.PRIVATE or depth != 0 or i != 0 or fingerprint != '\x00'*4:
+            raise ValueError( "Master key is not at top of tree and private" )
+
+        clean_settings['bip32master'] = new_settings['bip32master']
+        clean_settings['accountNumber'] = new_settings.get( "accountNumber", 1 )
+        clean_settings['accounts'] = { }
+        
+        for account, account_info in new_settings.get( 'accounts', { } ).items():
+            if 'accountKey' not in account_info:
+                raise ValueError( "Account %i has no master key" % account )
+            vbytes, depth, fingerprint, i, chaincode, key = bitcoin.bip32_deserialize( account_info["accountKey"]  )
+            if depth != 2 or vbytes != bitcoin.PRIVATE or i != 0:
+                raise ValueError( "Account %i has invalid master key" % account )
+
+            if account_info.get( "numKeys", 0 ) < 0:
+                raise ValueError( "Account %i has invalid key count " % account )
+            clean_settings['accounts'][account] = { }
+            clean_settings['accounts'][account]['accountKey'] = account_info['accountKey']
+            clean_settings['accounts'][account]['numKeys'] = account_info.get( "numKeys", 0 )
+            clean_settings['accounts'][account]['keys'] = []
+            KeyHelper.regenerate_keys( account_info['accountKey'], range( account_info.get("numKeys", 0 )), clean_settings['accounts'][account]['keys'] )
+
+        return clean_settings
 
     @staticmethod
     def get_next_public_key(  ):

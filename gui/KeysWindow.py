@@ -61,10 +61,12 @@ class KeysWindow(gtk.Dialog):
         self.account_spinner.set_update_policy( gtk.UPDATE_IF_VALID )
         self.account_spinner.set_numeric( True )
         self.account_spinner.set_snap_to_ticks( True )
+        self.pub_key_button = gtk.Button( "Extended Public Key" )
 
         info_box.pack_start( self.account_key_button, False )
         info_box.pack_start( label, False )
         info_box.pack_start( self.account_spinner, False )
+        info_box.pack_end( self.pub_key_button, False )
         info_vbox.pack_start( info_box, False )
         
         info_frame.add( info_vbox )
@@ -72,6 +74,7 @@ class KeysWindow(gtk.Dialog):
         info_box.show()
         label.show()
         self.account_key_button.show()
+        self.pub_key_button.show()
         self.account_spinner.show()
         return info_frame
     
