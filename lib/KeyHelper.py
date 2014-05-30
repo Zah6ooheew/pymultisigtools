@@ -69,9 +69,7 @@ class KeyHelper:
                 KeyHelper.regenerate_keys( account_key, needed_keys, settings['accounts'][account]['keys'] )
                 #save these if we had to regenerate them
                 Settings.Instance().save_config_file(settings)
-
-
-            account_info[account] = settings['accounts'][account].get( 'keys', 0 )
+            account_info[account] = settings['accounts'][account].get( 'keys', [] )
 
         return account_info, account_number
 
@@ -98,6 +96,14 @@ class KeyHelper:
         key_number = account_info['numKeys']
 
         return account_number, account_key, key_number
+
+    @staticmethod
+    def get_private_for_chain( account, key_number ):
+        settings = Settings.Instance().get_settings_json()
+        account_key = settings['accounts'][account]['accountKey']
+        return_key = bitcoin.bip32_ckd( account_key, key_number )
+        return_key = bitcoin.bip32_extract_key( return_key )
+        return return_key
 
     @staticmethod
     def get_next_public_key(  ):

@@ -8,7 +8,7 @@ class KeysWindow(gtk.Dialog):
     def __init__(self, *args):
         gtk.Dialog.__init__( self, *args )
 
-        self.set_default_size( 500, 400 )
+        self.set_default_size( 700, 400 )
         
         key_frame = self._create_key_frame()
         info_frame = self._create_info_frame()
@@ -25,20 +25,25 @@ class KeysWindow(gtk.Dialog):
         key_frame = gtk.Frame( "Account Keys" )
         self.key_view = gtk.TreeView()
         self.key_view.set_headers_clickable( False )
-        self.key_view.set_fixed_height_mode( True )
+        #self.key_view.set_fixed_height_mode( True )
 
-        count_column = gtk.TreeViewColumn( "", gtk.CellRendererText(), text=0 )
-        pubkey_column = gtk.TreeViewColumn( "Public Key", gtk.CellRendererText(), text=1 )
-        address_column = gtk.TreeViewColumn( "Psuedo Address", gtk.CellRendererText(), text=2 )
-        used_column = gtk.TreeViewColumn( "Used", gtk.CellRendererToggle(), active=3 )
+        cell = gtk.CellRendererText()
+        toggle = gtk.CellRendererToggle()
+        count_column = gtk.TreeViewColumn( "", cell, text=0 )
+        pubkey_column = gtk.TreeViewColumn( "Public Key", cell, text=1 )
+        #address_column = gtk.TreeViewColumn( "Psuedo Address", gtk.CellRendererText(), text=2 )
+        used_column = gtk.TreeViewColumn( "Used", toggle, active=2 )
 
         self.key_view.append_column( count_column )
         self.key_view.append_column( pubkey_column )
-        self.key_view.append_column( address_column )
+        #self.key_view.append_column( address_column )
         self.key_view.append_column( used_column )
 
-        key_frame.add( self.key_view )
-        
+        scroll_window = gtk.ScrolledWindow()
+        scroll_window.add( self.key_view )
+        key_frame.add( scroll_window )
+
+        scroll_window.show()
         self.key_view.show_all()
 
         return key_frame
@@ -68,8 +73,26 @@ class KeysWindow(gtk.Dialog):
         label.show()
         self.account_key_button.show()
         self.account_spinner.show()
-
         return info_frame
+    
+    def _create_popup_menu( self, data_callback ):
+        menu = gtk.Menu()
+        menu_item = gtk.MenuItem("Show private key")
+        menu_item.connect( "activate", self.show_private_key, data_callback )
+        menu.append(menu_item)
+        return menu
 
-    def add_controller( self, key_window_controller ):
-        self.display_button_clicked.connect( "clicked", key_window_controller )
+    def create_context_menu( self, event, data_callback ):
+        popup_menu = self._create_popup_menu( data_callback )
+        popup_menu.popup( None, None, None, event.button, event.time )
+        popup_menu.show_all()
+        return popup_menu
+
+    def show_private_key( self, event, data=None ):
+        private_key = data()
+        diag = gtk.MessageDialog( None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK , "Private Key:" )
+        diag.format_secondary_markup( private_key )
+        diag.run()
+        diag.destroy()
+
+
