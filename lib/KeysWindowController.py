@@ -60,6 +60,7 @@ class KeysWindowController:
         
 
     def display_no_account_message(self):
+        
         pass
 
     def display_needs_setup_message(self):

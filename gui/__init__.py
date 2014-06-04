@@ -2,5 +2,6 @@ from SelectActionWindow import SelectActionWindow
 from SignWindow import SignWindow
 from SettingsWindow import SettingsWindow
 from ResultsWindow import ResultsWindow
+from RedeemScriptWindow import RedeemScriptWindow
 from PasswordEntry import PasswordEntry
 from KeysWindow import KeysWindow

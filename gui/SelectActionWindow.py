@@ -33,6 +33,8 @@ class SelectActionWindow:
         self.toolbar.append_space()
         self.toolbar.append_item( "Sign", "Sign a partially signed transaction", "", gtk.image_new_from_stock( gtk.STOCK_CONVERT, gtk.ICON_SIZE_LARGE_TOOLBAR ), self.controller.create_sign_window )
         self.toolbar.append_space()
+        self.toolbar.append_item( "Scripts", "Manage Redeem Scripts", "", gtk.image_new_from_file("gui/script-key-icon.png") , self.controller.create_redeem_script_window )
+        self.toolbar.append_space()
         self.toolbar.append_item( "Keys", "Manage keys", "", gtk.image_new_from_file("gui/encrypted.png") , self.controller.create_key_window )
         self.toolbar.append_space()
         self.toolbar.append_item( "Settings", "Change settings", "", gtk.image_new_from_stock( gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_LARGE_TOOLBAR) , self.controller.create_settings_window )

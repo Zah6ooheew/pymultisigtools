@@ -63,6 +63,37 @@ class KeyHelper:
     def get_extended_public_key( account_key ):
         return bitcoin.bip32_privtopub( account_key )
 
+    @staticmethod
+    def get_redeem_scripts():
+        settings = Settings.Instance().get_settings_json()
+        if 'redeemScripts' not in settings:
+            return None
+
+        return settings["redeemScripts"]
+
+    @staticmethod
+    def add_redeem_script( script, notes ):
+        settings = Settings.Instance().get_settings_json()
+
+        if 'redeemScripts' not in settings:
+            settings['redeemScripts'] = []
+
+        #check for correctness of redeem_script
+        #this will raise an exception if there is a bad script
+        KeyHelper.parse_redeem_script( script )
+
+        p2shaddr = bitcoin.scriptaddr( script )
+
+        #see if this is a duplicate
+        duplicates = [ dup for dup in settings['redeemScripts'] if dup[0] == p2shaddr ]
+        if len( duplicates ) > 0:
+            raise ValueError( "%s already in redeem script list!" % p2shaddr )
+
+        settings['redeemScripts'].append( [ p2shaddr, script, notes ] )
+        Settings.Instance().save_config_file( settings )
+
+        return settings['redeemScripts']
+
     @staticmethod 
     def get_accounts():
         settings = Settings.Instance().get_settings_json()
@@ -100,6 +131,19 @@ class KeyHelper:
         return 
         
 
+    @staticmethod
+    def parse_redeem_script( script ):
+        try:
+            elements = bitcoin.deserialize_script( script )
+            if elements[-1] != 174:
+                raise ValueError( "no OP_CHECKMULTISIG found in redeemScript" )
+
+            if elements[-2] < elements[0]:
+                raise ValueError( "redeemscript asks for more sigs than supplies keys" )
+
+            return elements[1:(1+elements[-2])], elements[0]
+        except Exception as e:
+            raise ValueError( "redeemScript not in valid format: " + str(e) )
 
     @staticmethod
     def get_account_number_and_chain( settings=None, account_number=None):
@@ -150,6 +194,9 @@ class KeyHelper:
             clean_settings['accounts'][account]['numKeys'] = account_info.get( "numKeys", 0 )
             clean_settings['accounts'][account]['keys'] = []
             KeyHelper.regenerate_keys( account_info['accountKey'], range( account_info.get("numKeys", 0 )), clean_settings['accounts'][account]['keys'] )
+
+            #FIXME: actually check validity of imported redeemscripts
+            clean_settings['redeemScripts'] = new_settings.get( 'redeemScripts', [] )
 
         return clean_settings
 

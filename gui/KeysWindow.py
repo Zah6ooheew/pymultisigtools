@@ -48,6 +48,8 @@ class KeysWindow(gtk.Dialog):
 
         return key_frame
 
+    def show_message_in_key_frame( self, message ):
+        pass
 
     #creates the top area of the frame where we choose the account and filters
     def _create_info_frame( self ):

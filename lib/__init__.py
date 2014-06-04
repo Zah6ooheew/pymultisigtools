@@ -2,3 +2,4 @@ from SelectActionWindowController import SelectActionWindowController
 from TxSigner import TxSigner
 from Settings import Settings
 from KeyHelper import KeyHelper
+from RedeemScriptWindowController import RedeemScriptWindowController

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import bitcoin
 import json
+import KeyHelper
 
 class TxSigner:
 
@@ -37,26 +38,13 @@ class TxSigner:
                 redeemScriptCanidate = importTxInfo['input']['redeemScript']
 
             if redeemScriptCanidate is not None:
-                self.pubs, self.neededSigs = self.parse_redeemScript( redeemScriptCanidate )
+                self.pubs, self.neededSigs = KeyHelper.parse_redeem_script( redeemScriptCanidate )
                 self.redeemScript = redeemScriptCanidate
             else:
                 raise ValueError( "No redeemScript can be located." )
 
         except ValueError as e:
             raise RuntimeError( "Invalid Input", str( e ) )
-
-    def parse_redeemScript( self, script ):
-        try:
-            elements = bitcoin.deserialize_script( script )
-            if elements[-1] != 174:
-                raise ValueError( "no OP_CHECKMULTISIG found in redeemScript" )
-
-            if elements[-2] < elements[0]:
-                raise ValueError( "redeemscript asks for more sigs than supplies keys" )
-
-            return elements[1:(1+elements[-2])], elements[0]
-        except Exception as e:
-            raise ValueError( "redeemScript not in valid format: " + str(e) )
 
     def sign( self, privkey ):
 	if( self.tx is None or self.redeemScript is None ):
